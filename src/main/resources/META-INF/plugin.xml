@@ -1,0 +1,10 @@
+<idea-plugin>
+    <id>com.example.methoddumper</id>
+    <name>Method Dumper</name>
+    <vendor email="support@example.com" url="https://example.com">Example Co.</vendor>
+    <description><![CDATA[
+        <p>Collects Java method names and bodies via file-based indexes and writes them to JSON on project open or on demand.</p>
+    ]]></description>
+
+    <depends>com.intellij.java</depends>
+</idea-plugin>
