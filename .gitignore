@@ -1,0 +1,36 @@
+# IntelliJ IDEA
+
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Gradle
+
+.gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# OS
+
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+
+distributions/
+libs/
+
+# Test output
+
+test-results/
+*.log
+
+# Plan files (not for repository)
+
+plan.plan.md
+*.plan.md
+
