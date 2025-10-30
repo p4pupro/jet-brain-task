@@ -62,6 +62,65 @@ data class MethodEntry(
 
 ---
 
-**Last updated**: October 29, 2025  
+## Phase 3: File-Based Index Implementation
+
+### 📅 Step 3.1: FileBasedIndex Research
+**Date**: After Phase 2
+
+**Objective**: Understand how to implement file-based indexes in IntelliJ Platform.
+
+**Actions taken**:
+- Reviewed IntelliJ Platform SDK documentation on `FileBasedIndexExtension`
+- Analyzed examples in IntelliJ IDEA source code
+- Identified required components:
+  - `FileBasedIndexExtension<TKey, TValue>`
+  - `DataIndexer` for file processing
+  - `KeyDescriptor` for key serialization
+  - `DataExternalizer` for value serialization
+
+**Result**: ✅ Clear understanding of index architecture
+
+---
+
+### 📅 Step 3.2: MethodFileBasedIndex Implementation (First Version)
+**Date**: October 30, 2025 08:00:00
+
+**Objective**: Create the index skeleton that will process Java files and extract methods.
+
+**Actions taken**:
+- Created `MethodFileBasedIndex.kt` extending `FileBasedIndexExtension<String, MethodEntry>`
+- Basic skeleton implementation of `getIndexer()` using `DataIndexer`
+- Created `MethodDataExternalizer.kt` implementing `DataExternalizer<MethodEntry>`
+- Used `IOUtil.writeUTF/readUTF` for efficient serialization
+
+**Code implemented**:
+```kotlin
+class MethodFileBasedIndex : FileBasedIndexExtension<String, MethodEntry>() {
+    override fun getIndexer(): DataIndexer<String, MethodEntry, FileContent> = DataIndexer { inputData ->
+        // Skeleton implementation - will be completed in next commit
+        emptyMap()
+    }
+    // ... other required overrides
+}
+```
+
+**Problems encountered**:
+1. **Problem A3.2.1**: How to filter only Java files?
+   - **Diagnosis**: The index needs to process only `.java` files
+   - **Action**: Research on `DefaultFileTypeSpecificInputFilter`
+   - **Solution**: ✅ Implementation of `FILE_FILTER` using `JavaFileType.INSTANCE`
+
+2. **Problem A3.4.1**: Which utility to use for UTF-8 serialization?
+   - **Diagnosis**: Research on IntelliJ Platform APIs
+   - **Action**: Review of examples in IntelliJ source code
+   - **Solution**: ✅ Using `IOUtil` which correctly handles UTF-8 and is standard on the platform
+
+**Result**: ✅ Basic index structure that compiles successfully
+
+**Build check**: ✅ Compiles (skeleton implementation with empty indexer)
+
+---
+
+**Last updated**: October 30, 2025  
 **Plugin Version**: 0.1.0  
 **Target IDE**: IntelliJ IDEA 2025.2.4 (Build #IU-252.27397.103)
