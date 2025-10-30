@@ -7,4 +7,8 @@
     ]]></description>
 
     <depends>com.intellij.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileBasedIndex implementation="com.example.methoddumper.index.MethodFileBasedIndex"/>
+    </extensions>
 </idea-plugin>

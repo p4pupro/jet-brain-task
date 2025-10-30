@@ -121,6 +121,105 @@ class MethodFileBasedIndex : FileBasedIndexExtension<String, MethodEntry>() {
 
 ---
 
+### 📅 Step 3.3: Method Visitor Implementation
+**Date**: October 30, 2025 10:00:00
+
+**Objective**: Extract methods from the PSI tree with their complete bodies.
+
+**Actions taken**:
+- Created inner class `MethodVisitor` extending `JavaRecursiveElementVisitor`
+- Implemented `visitMethod()` to capture methods
+- Handled methods without bodies (abstract, interfaces)
+- Created `computeKey()` for unique method identification
+- Updated `plugin.xml` to register fileBasedIndex extension
+
+**Code implemented**:
+```kotlin
+private class MethodVisitor(private val target: MutableMap<String, MethodEntry>) 
+    : JavaRecursiveElementVisitor() {
+    
+    override fun visitMethod(method: PsiMethod) {
+        super.visitMethod(method)
+        val body = method.body ?: return  // Only methods with body
+        val key = computeKey(method)
+        val bodyText = body.text ?: ""
+        target[key] = MethodEntry(name = method.name, body = bodyText)
+    }
+}
+```
+
+**Problems encountered**:
+1. **Problem A3.3.1**: Some methods don't have bodies (abstract)
+   - **Diagnosis**: `method.body` can be `null` for abstract methods
+   - **Action**: Explicit check with early return
+   - **Solution**: ✅ Filtered out methods without body
+
+2. **Problem A3.2.2**: How to generate unique keys for methods?
+   - **Diagnosis**: Methods can have the same name in different classes or with different parameters
+   - **Action**: Analysis of how to uniquely identify a method
+   - **Solution**: ✅ Created `computeKey()` that combines: `className#methodName(parameters)@offset`
+
+**Result**: ✅ Functional visitor that extracts methods with their bodies
+
+**Build check**: ✅ Compiles complete index implementation with visitor
+
+---
+
+## Phase 4: Dump Service Implementation
+
+### 📅 Step 4.1: MethodDumpService Creation
+**Date**: October 30, 2025 14:00:00
+
+**Objective**: Create a service that aggregates methods from the index and writes them to JSON.
+
+**Actions taken**:
+- Created `MethodDumpService.kt` as project-level service
+- Used `@Service(Service.Level.PROJECT)` for dependency injection
+- Added Gson dependency to `build.gradle.kts` for JSON serialization
+- Implemented `collectMethods()` using `FileBasedIndex.getInstance()`
+- Implemented `dumpMethodsToJson()` for writing JSON files
+- Used `ReadAction.compute()` for thread-safe index access
+
+**Code implemented**:
+```kotlin
+@Service(Service.Level.PROJECT)
+class MethodDumpService(private val project: Project) {
+    fun collectMethods(scope: GlobalSearchScope): List<MethodEntry> {
+        return ReadAction.compute {
+            // Aggregate methods from index
+        }
+    }
+    
+    fun dumpMethodsToJson(outputPath: Path): Path {
+        val methods = collectMethods()
+        writeJson(outputPath, methods)
+        return outputPath
+    }
+}
+```
+
+**Problems encountered**:
+1. **Problem A4.1.2**: Code must execute in `ReadAction`
+   - **Diagnosis**: Index access requires execution within `ReadAction`
+   - **Action**: Initial tests showed threading errors
+   - **Solution**: ✅ Wrapping in `ReadAction.compute()` for thread-safe access
+
+2. **Problem A4.2.1**: How to filter methods only from project (exclude external libraries)?
+   - **Diagnosis**: The index includes methods from all dependencies
+   - **Action**: Research on `GlobalSearchScope`
+   - **Solution**: ✅ Using `GlobalSearchScope.projectScope(project)` to filter only project code
+
+3. **Problem A4.3.2**: Directory may not exist
+   - **Diagnosis**: `Files.writeString()` fails if parent directory doesn't exist
+   - **Action**: Tests showed `NoSuchFileException` exceptions
+   - **Solution**: ✅ Explicit directory creation with `Files.createDirectories()`
+
+**Result**: ✅ Service capable of collecting all project methods and writing JSON
+
+**Build check**: ✅ Compiles successfully with Gson dependency
+
+---
+
 **Last updated**: October 30, 2025  
 **Plugin Version**: 0.1.0  
 **Target IDE**: IntelliJ IDEA 2025.2.4 (Build #IU-252.27397.103)

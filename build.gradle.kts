@@ -23,6 +23,13 @@ kotlin {
     jvmToolchain(javaVersion.toInt())
 }
 
+dependencies {
+    implementation("com.google.code.gson:gson:2.11.0")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:5.1.1")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:${kotlinVersion}")
+}
+
 intellij {
     version.set(intellijVersion)
     type.set(intellijType)
