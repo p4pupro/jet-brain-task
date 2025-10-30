@@ -220,6 +220,68 @@ class MethodDumpService(private val project: Project) {
 
 ---
 
+## Phase 5: Automatic Execution on Project Open
+
+### 📅 Step 5.1: ProjectActivity Research
+**Date**: After Phase 4
+
+**Objective**: Implement automatic dump execution when opening a project.
+
+**Actions taken**:
+- Researched `ProjectActivity` API in IntelliJ Platform
+- Analyzed how to wait for project to be fully indexed
+- Identified necessary APIs to wait for correct state
+
+**Problems encountered**:
+1. **Problem A5.1.1**: When to execute the dump?
+   - **Diagnosis**: Need to wait for index to be complete
+   - **Action**: Reviewed documentation on project lifecycle
+   - **Solution**: ✅ Decision to use `ProjectActivity` with appropriate waits
+
+---
+
+### 📅 Step 5.2: MethodDumpProjectActivity Implementation
+**Date**: October 30, 2025 18:00:00
+
+**Objective**: Create activity that executes on project open and generates JSON.
+
+**Actions taken**:
+- Created `MethodDumpProjectActivity.kt` implementing `ProjectActivity`
+- Implemented `execute()` with indexing waits
+- Used `Observation.awaitConfiguration(project)` to wait for configuration
+- Used `project.waitForSmartMode()` to wait for "smart" mode (complete indexing)
+- Updated `plugin.xml` to register projectActivity extension
+
+**Code implemented**:
+```kotlin
+class MethodDumpProjectActivity : ProjectActivity {
+    override suspend fun execute(project: Project) {
+        Observation.awaitConfiguration(project)
+        project.waitForSmartMode()
+        
+        val service = project.service<MethodDumpService>()
+        service.dumpMethodsToJson()
+    }
+}
+```
+
+**Problems encountered**:
+1. **Problem A5.2.1**: JSON generated before index was complete
+   - **Diagnosis**: First version didn't wait for indexing, resulting in empty JSON
+   - **Action**: Log analysis and tests with large projects
+   - **Solution**: ✅ Added `Observation.awaitConfiguration()` and `waitForSmartMode()`
+
+2. **Problem A5.2.2**: Main thread blocking during indexing
+   - **Diagnosis**: `waitForSmartMode()` can block if called on main thread
+   - **Action**: Reviewed `ProjectActivity` documentation (it's a suspend function)
+   - **Solution**: ✅ `ProjectActivity.execute()` is suspend, allows async execution
+
+**Result**: ✅ Activity that automatically generates JSON after indexing
+
+**Build check**: ✅ Compiles successfully
+
+---
+
 **Last updated**: October 30, 2025  
 **Plugin Version**: 0.1.0  
 **Target IDE**: IntelliJ IDEA 2025.2.4 (Build #IU-252.27397.103)

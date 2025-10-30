@@ -10,5 +10,6 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <fileBasedIndex implementation="com.example.methoddumper.index.MethodFileBasedIndex"/>
+        <projectActivity implementation="com.example.methoddumper.activity.MethodDumpProjectActivity"/>
     </extensions>
 </idea-plugin>
