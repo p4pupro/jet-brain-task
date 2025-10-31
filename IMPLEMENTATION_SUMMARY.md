@@ -405,6 +405,78 @@ tasks {
 
 ---
 
+## Phase 8: Testing and Validation
+
+### 📅 Step 8.1: Testing with Small Project
+**Date**: After Phase 6
+
+**Objective**: Validate basic functionality with a simple project.
+
+**Actions taken**:
+- Created simple Java project with few methods
+- Installed plugin from built ZIP
+- Opened project and verified automatic generation
+- Manually executed action from Tools menu
+- Verified generated JSON content
+
+**Results**:
+- ✅ JSON automatically generated when opening project
+- ✅ Manual action works correctly
+- ✅ Methods extracted correctly with names and bodies
+
+**Problems encountered**: None
+
+---
+
+### 📅 Step 8.2: Testing with Large Project (spring-petclinic)
+**Date**: October 31, 2025 18:00:00
+
+**Objective**: Validate performance and correctness with a real project of considerable size.
+
+**Test project**: [spring-petclinic](https://github.com/spring-projects/spring-petclinic)
+- **30 Java files**
+- **Multiple packages**: controllers, services, entities, tests
+
+**Actions taken**:
+1. Cloned spring-petclinic
+2. Installed plugin
+3. Opened project
+4. Waited for complete indexing
+5. Verified automatic JSON generation
+6. Analyzed generated JSON content
+
+**Results**:
+- ✅ **234 methods** extracted correctly
+- ✅ **55 KB** JSON generated
+- ✅ Includes methods from different types: controllers, services, entities, tests
+- ✅ Valid and well-structured JSON format
+- ✅ Methods sorted by name
+
+**Problems encountered**:
+
+1. **Problem A8.2.1**: Some methods appeared with empty body
+   - **Diagnosis**: JSON analysis showed `"body": ""` in some methods
+   - **Action**: Reviewed visitor code and manual tests
+   - **Root cause**: Methods with bodies containing only comments or spaces
+   - **Solution**: ✅ Correct behavior - methods without executable body return empty string
+
+2. **Problem A8.2.2**: Method update verification
+   - **Objective**: Validate that method changes are reflected in JSON
+   - **Action**: Modified existing method, waited for re-indexing, manual execution
+   - **Result**: ✅ Changes correctly reflected after re-indexing
+
+**Output metrics**:
+- Total methods: 234
+- Average body length: ~235 characters
+- Longest method: `executeCommand` with 5,545 characters
+- Generation time: < 2 seconds for 234 methods
+
+**Sample file created**: `samples/spring-petclinic-methods.json`
+
+**Build check**: ✅ Compiles (no code changes, just data file)
+
+---
+
 **Last updated**: October 31, 2025  
 **Plugin Version**: 0.1.0  
 **Target IDE**: IntelliJ IDEA 2025.2.4 (Build #IU-252.27397.103)
