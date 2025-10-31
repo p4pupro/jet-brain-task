@@ -1,15 +1,18 @@
 package com.example.methoddumper.index
 
 import com.example.methoddumper.model.MethodEntry
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.util.io.IOUtil
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
 import java.io.DataOutputStream
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Test
 
-class MethodDataExternalizerTest : BasePlatformTestCase() {
+class MethodDataExternalizerTest {
 
+    @Test
     fun testSaveAndRead() {
         val externalizer = MethodDataExternalizer
         val original = MethodEntry("testMethod", "public void test() { }")
@@ -28,6 +31,7 @@ class MethodDataExternalizerTest : BasePlatformTestCase() {
         assertEquals(original.body, restored.body)
     }
 
+    @Test
     fun testSaveAndReadEmptyBody() {
         val externalizer = MethodDataExternalizer
         val original = MethodEntry("emptyMethod", "")
@@ -46,6 +50,7 @@ class MethodDataExternalizerTest : BasePlatformTestCase() {
         assertEquals(original.body, restored.body)
     }
 
+    @Test
     fun testSaveAndReadLargeBody() {
         val externalizer = MethodDataExternalizer
         val largeBody = "public void largeMethod() {\n" + "    ".repeat(100) + "}\n"
@@ -65,4 +70,3 @@ class MethodDataExternalizerTest : BasePlatformTestCase() {
         assertEquals(original.body, restored.body)
     }
 }
-

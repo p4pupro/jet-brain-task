@@ -282,6 +282,129 @@ class MethodDumpProjectActivity : ProjectActivity {
 
 ---
 
-**Last updated**: October 30, 2025  
+## Phase 6: Manual Action (Bonus Requirement)
+
+### 📅 Step 6.1: DumpMethodsAction Implementation
+**Date**: October 31, 2025 08:00:00
+
+**Objective**: Create manual action in Tools menu to regenerate JSON on demand.
+
+**Actions taken**:
+- Created `DumpMethodsAction.kt` extending `DumbAwareAction`
+- Implemented `actionPerformed()` that calls service
+- Used `ProgressManager` to show progress
+- Implemented notifications for user feedback
+- Updated `plugin.xml` to register action and notification group
+
+**Code implemented**:
+```kotlin
+class DumpMethodsAction : DumbAwareAction() {
+    override fun actionPerformed(event: AnActionEvent) {
+        ProgressManager.getInstance().run(object : Task.Backgroundable(...) {
+            override fun run(indicator: ProgressIndicator) {
+                DumbService.getInstance(project).waitForSmartMode()
+                val methods = service.collectMethods()
+                val output = service.dumpMethodsToJson()
+                notify(...)
+            }
+        })
+    }
+}
+```
+
+**Problems encountered**:
+1. **Problem A6.1.1**: Action must work even during indexing
+   - **Diagnosis**: Normal actions don't work during indexing ("dumb mode")
+   - **Action**: Reviewed documentation on `DumbAwareAction`
+   - **Solution**: ✅ Extending `DumbAwareAction` allows execution during indexing
+
+2. **Problem A6.1.2**: Need to show progress to user
+   - **Diagnosis**: Long operations must show feedback
+   - **Action**: Implemented `Task.Backgroundable` with `ProgressIndicator`
+   - **Solution**: ✅ Progress indicator shown during execution
+
+3. **Problem A6.1.3**: User feedback on success/error
+   - **Diagnosis**: User needs to know if operation was successful
+   - **Action**: Researched IntelliJ notification system
+   - **Solution**: ✅ Implemented notifications using `NotificationGroupManager`
+
+**Result**: ✅ Functional manual action with adequate feedback
+
+**Build check**: ✅ Compiles successfully
+
+---
+
+## Phase 7: Build Configuration and Compatibility
+
+### 📅 Step 7.1: Initial build.gradle.kts Configuration
+**Date**: During Phase 1, refined in later phases
+
+**Objective**: Configure build to compile and package the plugin correctly.
+
+**Actions taken**:
+- Configured `org.jetbrains.intellij` plugin
+- Specified IntelliJ version (252.27397.103)
+- Configured type (IU - IntelliJ IDEA Ultimate)
+- Added `java` plugin dependency
+- Configured build compatibility
+
+---
+
+### 📅 Step 7.2: Problems with runIde Task
+**Date**: During development testing
+
+**Problem encountered**: `./gradlew runIde` failed with compatibility errors.
+
+**Symptoms**:
+```
+Error: Kotlin plugin compatibility issues
+Exception: UnsupportedClassVersionError
+```
+
+**Diagnosis performed**:
+1. Reviewed Gradle error logs
+2. Compared Kotlin versions between Gradle plugin and IntelliJ IDE
+3. Investigated known issues with IntelliJ 2025.2.4
+
+**Actions taken**:
+- Searched Gradle IntelliJ Plugin documentation
+- Reviewed related GitHub issues
+- Tested with different Kotlin versions
+
+**Solution implemented**:
+- **Workaround**: Use manual installation from ZIP instead of `runIde`
+- **Configuration**: Configured `IDEA_HOME` as fallback in `build.gradle.kts`
+- **Documentation**: Documented in README as known limitation
+
+**Result**: ✅ Plugin works perfectly with manual installation, `runIde` documented as known incompatibility
+
+---
+
+### 📅 Step 7.3: Problems with buildSearchableOptions
+**Date**: October 31, 2025 14:00:00
+
+**Problem encountered**: `buildSearchableOptions` task failed for the same reasons as `runIde`.
+
+**Actions taken**:
+- Explicitly disabled `buildSearchableOptions` in `build.gradle.kts`
+
+**Code added**:
+```kotlin
+tasks {
+    buildSearchableOptions {
+        enabled = false
+    }
+}
+```
+
+**Justification**: The plugin doesn't have complex configuration that requires searchable options.
+
+**Result**: ✅ Successful build without searchable options (doesn't affect functionality)
+
+**Build check**: ✅ Compiles successfully
+
+---
+
+**Last updated**: October 31, 2025  
 **Plugin Version**: 0.1.0  
 **Target IDE**: IntelliJ IDEA 2025.2.4 (Build #IU-252.27397.103)

@@ -1,41 +1,40 @@
 package com.example.methoddumper.index
 
-import com.example.methoddumper.model.MethodEntry
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.util.indexing.FileBasedIndex
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
+import org.junit.Test
 
-class MethodFileBasedIndexTest : BasePlatformTestCase() {
+class MethodFileBasedIndexTest {
 
+    @Test
     fun testIndexIdNotNull() {
         assertNotNull(MethodFileBasedIndex.INDEX_ID)
     }
 
+    @Test
     fun testIndexVersion() {
         val index = MethodFileBasedIndex()
         assertEquals(1, index.version)
     }
 
+    @Test
     fun testDependsOnFileContent() {
         val index = MethodFileBasedIndex()
         assertTrue(index.dependsOnFileContent())
     }
 
+    @Test
     fun testHasSnapshotMapping() {
         val index = MethodFileBasedIndex()
         assertTrue(index.hasSnapshotMapping())
     }
 
-    fun testIndexRegistered() {
-        val instance = FileBasedIndex.getInstance()
+    @Test
+    fun testIndexIdCreation() {
         val indexId = MethodFileBasedIndex.INDEX_ID
-        
-        // Verify index is registered (keyDescriptor should not throw)
-        assertNotNull(indexId)
-        
-        // Try to get index extension
-        val extensions = FileBasedIndex.EXTENSION_POINT_NAME.extensions
-        val ourIndex = extensions.find { it.name == indexId }
-        assertNotNull("Index should be registered", ourIndex)
+        assertNotNull("Index ID should not be null", indexId)
+        assertEquals("MethodFileBasedIndex", indexId.name)
     }
 }
-

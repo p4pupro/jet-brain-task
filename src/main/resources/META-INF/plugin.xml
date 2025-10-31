@@ -11,5 +11,15 @@
     <extensions defaultExtensionNs="com.intellij">
         <fileBasedIndex implementation="com.example.methoddumper.index.MethodFileBasedIndex"/>
         <projectActivity implementation="com.example.methoddumper.activity.MethodDumpProjectActivity"/>
+        <notificationGroup id="Method Dumper Notifications" displayType="BALLOON" isLogByDefault="true"/>
     </extensions>
+
+    <actions>
+        <action id="MethodDumper.DumpMethodsAction"
+                class="com.example.methoddumper.actions.DumpMethodsAction"
+                text="Dump Java Methods to JSON"
+                description="Serialize indexed Java methods into a JSON file">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+    </actions>
 </idea-plugin>

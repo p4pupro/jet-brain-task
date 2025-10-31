@@ -42,8 +42,22 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks {
+    runIde {
+        val ideaHomeProvider = providers.environmentVariable("IDEA_HOME").map { file(it) }
+        ideaHomeProvider.orNull?.let { ideDir.set(it) }
+        autoReloadPlugins.set(false)
+    }
     patchPluginXml {
         sinceBuild.set("252.27397")
         untilBuild.set("252.*")
+    }
+    signPlugin {
+        enabled = false
+    }
+    publishPlugin {
+        enabled = false
+    }
+    buildSearchableOptions {
+        enabled = false
     }
 }
